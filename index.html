@@ -10,31 +10,41 @@
         * { box-sizing: border-box; touch-action: manipulation; }
         body { margin: 0; font-family: 'Roboto', sans-serif; background: var(--hd-light); color: #333; text-align: center; }
         
-        header { background: var(--hd-orange); padding: 12px; color: white; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        /* BRANDING */
+        header { background: var(--hd-orange); padding: 12px; color: white; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); position: sticky; top: 0; z-index: 100; }
         .hd-square { background: var(--hd-orange); border: 2px solid white; color: white; font-family: 'Oswald', sans-serif; font-size: 0.7rem; font-weight: bold; padding: 3px 5px; line-height: 1; transform: skew(-10deg); }
         h1 { font-family: 'Oswald', sans-serif; margin: 0; font-size: 1.3rem; letter-spacing: 0.5px; text-transform: uppercase; }
 
         .page { display: none; max-width: 450px; margin: 0 auto; padding: 20px; min-height: 100vh; }
         .active { display: block; }
 
+        /* BUTTONS */
         .btn { width: 100%; padding: 16px; border: none; border-radius: 4px; font-family: 'Oswald', sans-serif; font-size: 1.1rem; cursor: pointer; margin-bottom: 12px; text-transform: uppercase; transition: 0.2s; }
         .btn-orange { background: var(--hd-orange); color: white; }
         .btn-dark { background: var(--hd-dark); color: white; }
-        .btn-download { background: #2ecc71; color: white; }
+        .btn-save { background: #2ecc71; color: white; margin-top: 10px; }
 
-        .viewport { position: relative; width: 100%; background: black; border-radius: 8px; overflow: hidden; border: 4px solid var(--hd-orange); }
+        /* VIEWPORT & AI */
+        .viewport { position: relative; width: 100%; background: black; border-radius: 8px; overflow: hidden; border: 4px solid var(--hd-orange); margin-bottom: 10px; }
         video { width: 100%; display: none; }
         canvas { width: 100%; display: block; }
+        
+        /* PULSE ANIMATION */
+        .scanning-ring { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; border: 3px solid white; border-radius: 50%; animation: pulse 1.5s infinite; pointer-events: none; }
+        @keyframes pulse { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(2); opacity: 0; } }
 
+        /* STORAGE */
         .list-card { background: white; padding: 15px; margin-bottom: 15px; border-left: 6px solid var(--hd-orange); text-align: left; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .video-preview { width: 100%; border-radius: 4px; background: #000; }
+
+        /* COLOR GRID */
+        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 15px 0; background: white; padding: 10px; border-radius: 8px; }
+        .swatch { height: 40px; border-radius: 4px; cursor: pointer; border: 1px solid #ccc; transition: 0.2s; }
+        .swatch.selected { border: 3px solid var(--hd-orange); transform: scale(1.1); box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
         
-        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 20px 0; background: white; padding: 10px; border-radius: 8px; }
-        .swatch { height: 45px; border-radius: 4px; cursor: pointer; border: 1px solid #ccc; }
-        .swatch.selected { border: 3px solid var(--hd-orange); transform: scale(1.1); }
-        
-        .status-pill { background: #333; color:white; padding: 8px 15px; border-radius: 4px; font-size: 0.8rem; margin-bottom: 10px; display: inline-block; font-family: 'Oswald'; }
-        .controls { background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: left; }
-        input[type=range] { width: 100%; accent-color: var(--hd-orange); margin-top: 5px; }
+        .status-bar { background: #333; color:white; padding: 8px 15px; border-radius: 4px; font-size: 0.8rem; margin-bottom: 10px; display: inline-block; font-family: 'Oswald'; letter-spacing: 1px; }
+        .control-group { background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: left; }
+        input[type=range] { width: 100%; accent-color: var(--hd-orange); }
     </style>
 </head>
 <body>
@@ -45,61 +55,62 @@
     </header>
 
     <div id="homePage" class="page active">
-        <h2 style="font-family:'Oswald'; margin-top:30px;">Visualizer Dashboard</h2>
-        <button class="btn btn-orange" onclick="showPage('uploadPage')">📹 New Room Scan</button>
-        <button class="btn btn-dark" onclick="openStorage()">📦 My Projects</button>
+        <h2 style="font-family:'Oswald'; margin-top:40px;">Visualizer Tools</h2>
+        <button class="btn btn-orange" onclick="showPage('uploadPage')">📷 Record New Room</button>
+        <button class="btn btn-dark" onclick="renderStorage()">📦 View Saved Projects</button>
     </div>
 
     <div id="uploadPage" class="page">
-        <h2 style="font-family:'Oswald'">Record Video</h2>
-        <p>Ensure the wall is clearly visible and recording is at least 3 seconds.</p>
-        <input type="file" id="fileInput" accept="video/*" capture="environment" style="display:none" onchange="saveToStorage(event)">
-        <button class="btn btn-orange" onclick="document.getElementById('fileInput').click()">Capture Video</button>
-        <button class="btn btn-dark" onclick="showPage('homePage')">Back</button>
+        <h2 style="font-family:'Oswald'">Upload Capture</h2>
+        <p>Record a 3-5 second clip of the wall you want to paint.</p>
+        <input type="file" id="cameraInput" accept="video/*" capture="environment" style="display:none" onchange="handleFile(event)">
+        <button class="btn btn-orange" onclick="document.getElementById('cameraInput').click()">Open Camera</button>
+        <button class="btn btn-dark" onclick="showPage('homePage')">Cancel</button>
     </div>
 
     <div id="storagePage" class="page">
-        <h2 style="font-family:'Oswald'">Project Library</h2>
+        <h2 style="font-family:'Oswald'">My Projects</h2>
         <div id="storageList"></div>
-        <button class="btn btn-dark" onclick="showPage('homePage')">Main Menu</button>
+        <button class="btn btn-dark" onclick="showPage('homePage')">Back to Menu</button>
     </div>
 
-    <div id="editPage" class="page">
-        <div class="status-pill" id="status">1. TAP THE WALL TO TARGET</div>
+    <div id="editorPage" class="page">
+        <div class="status-bar" id="statusText">TAP THE WALL TO START</div>
         
-        <div class="viewport" onclick="setTarget(event)">
-            <video id="sourceVid" loop muted playsinline crossorigin="anonymous"></video>
-            <canvas id="outputCanvas"></canvas>
+        <div class="viewport" onclick="processTap(event)">
+            <video id="vSource" loop muted playsinline crossorigin="anonymous"></video>
+            <canvas id="cOutput"></canvas>
+            <div id="tapPrompt" class="scanning-ring"></div>
             <div style="position:absolute; bottom:10px; right:10px; pointer-events:none;">
                 <div class="hd-square">THE<br>HOME<br>DEPOT</div>
             </div>
         </div>
 
-        <div class="controls">
-            <label style="font-weight:bold; font-size:0.8rem;">AI MATCH SENSITIVITY</label>
-            <input type="range" id="sens" min="5" max="100" value="30">
+        <div class="control-group">
+            <label style="font-weight:bold; font-size:0.75rem;">AI SENSITIVITY (Match Strength)</label>
+            <input type="range" id="tolerance" min="5" max="100" value="35">
         </div>
 
-        <div class="grid" id="colorGrid"></div>
+        <div class="grid" id="paintGrid"></div>
         
-        <button class="btn btn-download" onclick="downloadImage()">📸 Save Photo to Device</button>
-        <button class="btn btn-dark" onclick="stopEditor()">Close Editor</button>
+        <button class="btn btn-save" onclick="downloadFrame()">📸 Download Design</button>
+        <button class="btn btn-dark" onclick="exitEditor()">Close Editor</button>
     </div>
 
     <script>
-        const paints = [
-            {n:'Pure White', h:'#FFFFFF'}, {n:'Swiss Coffee', h:'#F1EFE0'},
+        const paintColors = [
+            {n:'Ultra Pure White', h:'#FFFFFF'}, {n:'Swiss Coffee', h:'#F1EFE0'},
             {n:'Slate Grey', h:'#708090'}, {n:'Naval Blue', h:'#202A44'},
-            {n:'Sage Green', h:'#778875'}, {n:'Cinnamon', h:'#9E4825'},
-            {n:'Harvest Gold', h:'#D8A728'}, {n:'Terra Cotta', h:'#C46247'},
-            {n:'Teal Blue', h:'#006D75'}, {n:'Charcoal', h:'#333333'}
+            {n:'Sage Brush', h:'#778875'}, {n:'Cinnamon', h:'#9E4825'},
+            {n:'Golden Honey', h:'#D8A728'}, {n:'Terra Cotta', h:'#C46247'},
+            {n:'Deep Teal', h:'#006D75'}, {n:'Iron Mountain', h:'#333333'}
         ];
 
-        let activeRGB = null; 
-        let wallTargetHSL = null;
-        let frameId;
-        const video = document.getElementById('sourceVid');
-        const canvas = document.getElementById('outputCanvas');
+        let selectedRGB = null; 
+        let wallHSL = null;
+        let loopId;
+        const video = document.getElementById('vSource');
+        const canvas = document.getElementById('cOutput');
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
         function showPage(id) {
@@ -107,125 +118,122 @@
             document.getElementById(id).classList.add('active');
         }
 
-        // --- STORAGE LOGIC ---
-        function saveToStorage(e) {
+        // --- STORAGE SYSTEM ---
+        function handleFile(e) {
             const file = e.target.files[0];
             if(!file) return;
             const reader = new FileReader();
             reader.onload = () => {
-                let db = JSON.parse(localStorage.getItem('hd_v4_storage') || '[]');
+                let db = JSON.parse(localStorage.getItem('hd_pro_vFinal') || '[]');
                 db.push({id: Date.now(), data: reader.result});
-                localStorage.setItem('hd_v4_storage', JSON.stringify(db));
-                openStorage();
+                localStorage.setItem('hd_pro_vFinal', JSON.stringify(db));
+                renderStorage();
             };
             reader.readAsDataURL(file);
         }
 
-        function openStorage() {
+        function renderStorage() {
             const list = document.getElementById('storageList');
             list.innerHTML = "";
-            let db = JSON.parse(localStorage.getItem('hd_v4_storage') || '[]');
-            if(db.length === 0) list.innerHTML = "<p>No project videos found.</p>";
+            let db = JSON.parse(localStorage.getItem('hd_pro_vFinal') || '[]');
+            if(db.length === 0) list.innerHTML = "<p>Your library is empty.</p>";
             db.forEach(item => {
                 const card = document.createElement('div');
                 card.className = "list-card";
                 card.innerHTML = `
-                    <strong>Scan: ${new Date(item.id).toLocaleTimeString()}</strong>
-                    <video src="${item.data}" style="width:100%; border-radius:4px; margin-top:8px;"></video>
-                    <button class="btn btn-orange" style="margin-top:8px; padding:10px;" onclick="initEditor('${item.data}')">Open Visualizer</button>
-                    <button style="color:red; background:none; border:none; width:100%; padding:5px; cursor:pointer;" onclick="deleteProj(${item.id})">Delete</button>
+                    <strong>Project: ${new Date(item.id).toLocaleTimeString()}</strong>
+                    <video src="${item.data}" class="video-preview"></video>
+                    <button class="btn btn-orange" style="margin-top:10px; padding:10px;" onclick="launchEditor('${item.data}')">Open Visualizer</button>
+                    <button style="color:#666; background:none; border:none; width:100%; cursor:pointer; font-size:0.8rem;" onclick="deleteItem(${item.id})">Remove Project</button>
                 `;
                 list.appendChild(card);
             });
             showPage('storagePage');
         }
 
-        function deleteProj(id) {
-            let db = JSON.parse(localStorage.getItem('hd_v4_storage') || '[]');
-            localStorage.setItem('hd_v4_storage', JSON.stringify(db.filter(i => i.id !== id)));
-            openStorage();
+        function deleteItem(id) {
+            let db = JSON.parse(localStorage.getItem('hd_pro_vFinal') || '[]');
+            localStorage.setItem('hd_pro_vFinal', JSON.stringify(db.filter(i => i.id !== id)));
+            renderStorage();
         }
 
         // --- AI LOGIC ---
-        function initEditor(src) {
+        function launchEditor(src) {
             video.src = src;
-            wallTargetHSL = null; activeRGB = null;
-            document.getElementById('status').innerText = "1. TAP THE WALL TO TARGET";
-            showPage('editPage');
+            wallHSL = null; selectedRGB = null;
+            document.getElementById('statusText').innerText = "1. TAP THE WALL TO TARGET";
+            document.getElementById('tapPrompt').style.display = 'block';
+            showPage('editorPage');
             video.play();
             video.onloadedmetadata = () => {
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
-                loop();
+                runAI();
             };
         }
 
-        // Convert RGB to HSL for better "Wall vs Person" detection
         function rgbToHsl(r, g, b) {
             r /= 255; g /= 255; b /= 255;
             const max = Math.max(r, g, b), min = Math.min(r, g, b);
             let h, s, l = (max + min) / 2;
-            if (max === min) { h = s = 0; } 
+            if (max === min) h = s = 0;
             else {
                 const d = max - min;
                 s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-                switch (max) {
-                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                    case g: h = (b - r) / d + 2; break;
-                    case b: h = (r - g) / d + 4; break;
-                }
+                if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+                else if (max === g) h = (b - r) / d + 2;
+                else h = (r - g) / d + 4;
                 h /= 6;
             }
             return [h * 360, s * 100, l * 100];
         }
 
-        function setTarget(e) {
+        function processTap(e) {
             const rect = canvas.getBoundingClientRect();
             const x = (e.clientX - rect.left) * (canvas.width / rect.width);
             const y = (e.clientY - rect.top) * (canvas.height / rect.height);
             const p = ctx.getImageData(x, y, 1, 1).data;
-            wallTargetHSL = rgbToHsl(p[0], p[1], p[2]);
-            document.getElementById('status').innerText = "2. PICK A COLOR BELOW";
+            wallHSL = rgbToHsl(p[0], p[1], p[2]);
+            document.getElementById('statusText').innerText = "2. PICK A COLOR BELOW";
+            document.getElementById('tapPrompt').style.display = 'none';
         }
 
-        function loop() {
+        function runAI() {
             if (video.paused || video.ended) return;
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
             const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const data = frame.data;
-            const sens = document.getElementById('sens').value;
+            const tol = parseInt(document.getElementById('tolerance').value);
 
-            if (wallTargetHSL && activeRGB) {
+            if (wallHSL && selectedRGB) {
                 for (let i = 0; i < data.length; i += 4) {
                     const hsl = rgbToHsl(data[i], data[i+1], data[i+2]);
-                    
-                    // Strong AI: Check if Hue and Saturation match the wall
-                    const hueDiff = Math.abs(hsl[0] - wallTargetHSL[0]);
-                    const satDiff = Math.abs(hsl[1] - wallTargetHSL[1]);
-                    const lumDiff = Math.abs(hsl[2] - wallTargetHSL[2]);
+                    const hDiff = Math.abs(hsl[0] - wallHSL[0]);
+                    const sDiff = Math.abs(hsl[1] - wallHSL[1]);
+                    const lDiff = Math.abs(hsl[2] - wallHSL[2]);
 
-                    // If it matches the tapped wall "signature"
-                    if (hueDiff < sens && satDiff < sens && lumDiff < sens * 1.5) {
-                        data[i] = (data[i] * activeRGB.r) / 255;
-                        data[i+1] = (data[i+1] * activeRGB.g) / 255;
-                        data[i+2] = (data[i+2] * activeRGB.b) / 255;
+                    if (hDiff < tol && sDiff < tol && lDiff < (tol * 1.5)) {
+                        data[i] = (data[i] * selectedRGB.r) / 255;
+                        data[i+1] = (data[i+1] * selectedRGB.g) / 255;
+                        data[i+2] = (data[i+2] * selectedRGB.b) / 255;
                     }
                 }
             }
             ctx.putImageData(frame, 0, 0);
-            frameId = requestAnimationFrame(loop);
+            loopId = requestAnimationFrame(runAI);
         }
 
-        // --- UI UTILS ---
-        function initGrid() {
-            const grid = document.getElementById('colorGrid');
-            paints.forEach(p => {
+        // --- INTERFACE UTILS ---
+        function buildPalette() {
+            const grid = document.getElementById('paintGrid');
+            paintColors.forEach(p => {
                 const sw = document.createElement('div');
                 sw.className = 'swatch'; sw.style.background = p.h;
                 sw.onclick = () => {
-                    activeRGB = hexToRgb(p.h);
+                    selectedRGB = hexToRgb(p.h);
                     document.querySelectorAll('.swatch').forEach(s => s.classList.remove('selected'));
                     sw.classList.add('selected');
+                    document.getElementById('statusText').innerText = "APPLIED: " + p.n.toUpperCase();
                 };
                 grid.appendChild(sw);
             });
@@ -236,16 +244,16 @@
             return {r, g, b};
         }
 
-        function stopEditor() { cancelAnimationFrame(frameId); video.pause(); showPage('storagePage'); }
+        function exitEditor() { cancelAnimationFrame(loopId); video.pause(); showPage('storagePage'); }
 
-        function downloadImage() {
+        function downloadFrame() {
             const link = document.createElement('a');
-            link.download = 'my-hd-project.png';
+            link.download = 'my-home-depot-project.png';
             link.href = canvas.toDataURL();
             link.click();
         }
 
-        initGrid();
+        buildPalette();
     </script>
 </body>
 </html>
