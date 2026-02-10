@@ -3,172 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Color - Home Depot Edition</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <title>Home Depot Pro Vision</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        :root { --hd-orange: #F96302; --hd-grey: #444444; --hd-white: #FFFFFF; }
+        :root { --hd-orange: #F96302; --hd-dark: #333333; --hd-light: #f5f5f5; }
         * { box-sizing: border-box; }
-        body { margin: 0; font-family: 'Inter', sans-serif; background: #f5f5f5; color: #333; text-align: center; }
+        body { margin: 0; font-family: 'Roboto', sans-serif; background: var(--hd-light); color: #333; text-align: center; }
         
-        /* BRANDING HEADER */
+        /* HEADER BRANDING */
         header { 
-            background: var(--hd-orange); 
-            padding: 15px; 
-            color: white; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15); 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            background: var(--hd-orange); padding: 12px; color: white; 
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
-        
-        /* CSS-Only Home Depot Logo */
-        .hd-logo-box {
-            background: var(--hd-orange);
-            color: white;
-            font-family: 'Oswald', sans-serif;
-            border: 2px solid white;
-            padding: 2px 5px;
-            font-size: 0.8rem;
-            line-height: 0.9;
-            transform: skew(-10deg);
-            font-weight: bold;
-            display: inline-block;
+        .hd-square { 
+            background: var(--hd-orange); border: 2px solid white; color: white; 
+            font-family: 'Oswald', sans-serif; font-size: 0.7rem; font-weight: bold; 
+            padding: 3px 5px; line-height: 1; transform: skew(-10deg); 
         }
-        
-        h1 { font-family: 'Oswald', sans-serif; margin: 0; text-transform: uppercase; font-size: 1.4rem; letter-spacing: 1px; }
+        h1 { font-family: 'Oswald', sans-serif; margin: 0; font-size: 1.3rem; letter-spacing: 0.5px; }
 
-        .page { display: none; width: 100%; max-width: 450px; margin: 0 auto; padding: 20px; min-height: 100vh; }
+        .page { display: none; max-width: 450px; margin: 0 auto; padding: 20px; min-height: 100vh; }
         .active { display: block; }
-        
-        /* UI BUTTONS */
-        .btn { 
-            width: 100%; padding: 18px; border: none; 
-            font-family: 'Oswald', sans-serif; font-weight: bold; font-size: 1.1rem;
-            cursor: pointer; margin-bottom: 15px; 
-            text-transform: uppercase; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .btn-upload { background: var(--hd-orange); color: white; }
-        .btn-storage { background: var(--hd-grey); color: white; }
-        .btn-colors { background: white; color: var(--hd-orange); border: 2px solid var(--hd-orange); }
-        .btn-back { background: #ddd; color: #333; margin-top: 20px; }
 
-        /* SCANNER & VIDEO */
-        .video-wrapper { 
-            position: relative; width: 100%; 
-            border: 5px solid var(--hd-orange); 
-            overflow: hidden; background: #000; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
-        }
+        /* BUTTONS */
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 4px; font-family: 'Oswald', sans-serif; font-size: 1.1rem; cursor: pointer; margin-bottom: 12px; text-transform: uppercase; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .btn-orange { background: var(--hd-orange); color: white; }
+        .btn-dark { background: var(--hd-dark); color: white; }
+        .btn-outline { background: white; border: 2px solid var(--hd-orange); color: var(--hd-orange); }
+
+        /* SCANNER UI */
+        .viewport { position: relative; width: 100%; background: black; border-radius: 8px; overflow: hidden; border: 4px solid var(--hd-orange); }
         video { width: 100%; display: none; }
         canvas { width: 100%; display: block; }
-
-        /* Watermark */
-        .watermark {
-            position: absolute; bottom: 10px; right: 10px;
-            opacity: 0.7; transform: scale(0.8); pointer-events: none;
+        
+        /* High-End Scanning Animation */
+        .scan-line {
+            position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: cyan; box-shadow: 0 0 10px cyan;
+            animation: scan 2s infinite linear;
+            display: none;
         }
+        .scanning .scan-line { display: block; }
+        @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
 
-        /* PALETTE */
-        .color-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 20px 0; background: white; padding: 15px; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .swatch { height: 45px; border-radius: 2px; cursor: pointer; border: 1px solid #ccc; }
-        .swatch.active { border: 3px solid var(--hd-orange); transform: scale(1.1); box-shadow: 0 0 10px rgba(0,0,0,0.2); }
+        /* Color Grid */
+        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 20px 0; background: white; padding: 10px; border-radius: 8px; }
+        .swatch { height: 45px; border-radius: 4px; cursor: pointer; border: 1px solid #ccc; position: relative; }
+        .swatch.selected { border: 3px solid var(--hd-orange); transform: scale(1.1); z-index: 2; }
         
-        .status-bar { background: #333; color: white; padding: 10px; font-size: 0.9rem; margin-bottom: 10px; font-family: 'Oswald'; letter-spacing: 1px; }
-        
-        .list-card { background: white; padding: 15px; margin-bottom: 15px; border-left: 6px solid var(--hd-orange); text-align: left; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .pill { background: #eee; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; display: inline-block; }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="hd-logo-box">THE<br>HOME<br>DEPOT</div>
-        <h1>Project Color</h1>
+        <div class="hd-square">THE<br>HOME<br>DEPOT</div>
+        <h1>Project Color™</h1>
     </header>
 
     <div id="homePage" class="page active">
-        <h2 style="font-family: 'Oswald'; color:#333; margin-top:30px;">Start Your Project</h2>
-        <p style="color:#666; margin-bottom:30px;">Visualize paint on your walls instantly.</p>
-        
-        <button class="btn btn-upload" onclick="showPage('instructionPage')">📷 Upload New Room</button>
-        <button class="btn btn-storage" onclick="openStorage()">📦 My Projects</button>
-        <button class="btn btn-colors" onclick="showPage('colorMenuPage')">🎨 Browse Colors</button>
+        <h2 style="font-family:'Oswald'; margin-top:30px;">Visualizer Tools</h2>
+        <button class="btn btn-orange" onclick="showPage('camPage')">📷 Start New Scan</button>
+        <button class="btn btn-dark" onclick="openStorage()">📦 My Projects</button>
+        <button class="btn btn-outline" onclick="showPage('palettePage')">🎨 Color Palette</button>
     </div>
 
-    <div id="instructionPage" class="page">
-        <h2 style="font-family: 'Oswald';">Step 1: Capture</h2>
-        <div style="background: white; padding: 20px; border: 1px solid #ccc; margin-bottom: 20px;">
-            <p><strong>3-Second Scan:</strong></p>
-            <p>Pan your camera slowly across the room. Ensure the walls are lit.</p>
+    <div id="camPage" class="page">
+        <h2 style="font-family:'Oswald'">Capture Room</h2>
+        <div style="background:white; padding:15px; border-radius:8px; margin-bottom:20px; text-align:left;">
+            <strong>Instructions:</strong>
+            <ul style="padding-left:20px; margin-top:5px; font-size:0.9rem; color:#555;">
+                <li>Hold camera steady.</li>
+                <li>Ensure walls are well lit.</li>
+                <li>Record for 3 seconds.</li>
+            </ul>
         </div>
-        <input type="file" id="camInput" accept="video/*" capture="environment" style="display:none" onchange="processUpload(event)">
-        <button class="btn btn-upload" onclick="document.getElementById('camInput').click()">Start Recording</button>
-        <button class="btn btn-back" onclick="showPage('homePage')">Back</button>
+        <input type="file" id="fileIn" accept="video/*" capture="environment" style="display:none" onchange="handleUpload(event)">
+        <button class="btn btn-orange" onclick="document.getElementById('fileIn').click()">Record Video</button>
+        <button class="btn btn-dark" onclick="showPage('homePage')">Back</button>
     </div>
 
     <div id="storagePage" class="page">
-        <h2 style="font-family: 'Oswald';">Saved Projects</h2>
+        <h2 style="font-family:'Oswald'">Saved Projects</h2>
         <div id="storageList"></div>
-        <button class="btn btn-back" onclick="showPage('homePage')">Main Menu</button>
+        <button class="btn btn-dark" onclick="showPage('homePage')">Main Menu</button>
     </div>
 
-    <div id="colorMenuPage" class="page">
-        <h2 style="font-family: 'Oswald';">Behr® Palette</h2>
-        <div class="color-grid" id="previewGrid"></div>
-        <button class="btn btn-back" onclick="showPage('homePage')">Main Menu</button>
+    <div id="palettePage" class="page">
+        <h2 style="font-family:'Oswald'">Behr® Premium Plus</h2>
+        <div class="grid" id="paletteGrid"></div>
+        <button class="btn btn-dark" onclick="showPage('homePage')">Back</button>
     </div>
 
-    <div id="editPage" class="page">
-        <div class="status-bar" id="statusText">AI SCANNING SURFACES...</div>
+    <div id="editorPage" class="page">
+        <div class="pill" id="status">AI: ANALYZING DEPTH...</div>
         
-        <div class="video-wrapper">
-            <video id="sourceVid" loop muted playsinline></video>
-            <canvas id="editorCanvas"></canvas>
-            <div class="watermark">
-                <div class="hd-logo-box">THE<br>HOME<br>DEPOT</div>
+        <div class="viewport" id="viewport">
+            <div class="scan-line"></div>
+            <video id="vid" loop muted playsinline></video>
+            <canvas id="canv"></canvas>
+            <div style="position:absolute; bottom:10px; right:10px; opacity:0.8;">
+                <div class="hd-square">THE<br>HOME<br>DEPOT</div>
             </div>
         </div>
 
-        <div class="color-grid" id="editorGrid"></div>
-        <button class="btn btn-upload" onclick="saveEdit()">Save Project</button>
-        <button class="btn btn-back" onclick="stopEditor()">Cancel</button>
+        <div class="grid" id="editorGrid"></div>
+        
+        <div style="display:flex; gap:10px;">
+            <button class="btn btn-orange" onclick="saveProject()">Save</button>
+            <button class="btn btn-dark" onclick="stopAI()">Exit</button>
+        </div>
     </div>
 
     <script>
-        // Home Depot / Behr Inspired Palette
-        const appColors = [
-            {h: '#F0F0F0', r: 240, g: 240, b: 240, n: 'Ultra Pure White'},
-            {h: '#E3DAC9', r: 227, g: 218, b: 201, n: 'Antique White'},
-            {h: '#A9A9A9', r: 169, g: 169, b: 169, n: 'Platinum'},
-            {h: '#3B444B', r: 59, g: 68, b: 75, n: 'Slate Grey'},
-            {h: '#005F6A', r: 0, g: 95, b: 106, n: 'Deep Sea Dive'},
-            {h: '#D2691E', r: 210, g: 105, b: 30, n: 'Cinnamon'},
-            {h: '#8A9A5B', r: 138, g: 154, b: 91, n: 'Sage Brush'},
-            {h: '#708090', r: 112, g: 128, b: 144, n: 'Stormy Sky'},
-            {h: '#B94E48', r: 185, g: 78, b: 72, n: 'Red Clay'},
-            {h: '#DAA520', r: 218, g: 165, b: 32, n: 'Honey Gold'}
+        const colors = [
+            {n:'Ultra Pure White', h:'#FFFFFF'}, {n:'Swiss Coffee', h:'#F1EFE0'},
+            {n:'Polar Bear', h:'#F5F6F0'}, {n:'Slate Grey', h:'#708090'},
+            {n:'Naval', h:'#202A44'}, {n:'Sage', h:'#778875'},
+            {n:'Cinnamon', h:'#9E4825'}, {n:'Mustard', h:'#D8A728'},
+            {n:'Terracotta', h:'#C46247'}, {n:'Teal', h:'#006D75'}
         ];
 
         let activeColor = null; 
-        let animationId = null;
-        const video = document.getElementById('sourceVid');
-        const canvas = document.getElementById('editorCanvas');
+        let animID;
+        const video = document.getElementById('vid');
+        const canvas = document.getElementById('canv');
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
+        // --- NAVIGATION & STORAGE ---
         function showPage(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
 
-        // --- UPLOAD & STORAGE ---
-        function processUpload(e) {
+        function handleUpload(e) {
             const file = e.target.files[0];
-            if (!file) return;
+            if(!file) return;
             const reader = new FileReader();
             reader.onload = () => {
-                let storage = JSON.parse(localStorage.getItem('hd_pro_storage') || '[]');
-                storage.push({ id: Date.now(), data: reader.result });
-                localStorage.setItem('hd_pro_storage', JSON.stringify(storage));
+                let s = JSON.parse(localStorage.getItem('hd_pro') || '[]');
+                s.push({id: Date.now(), data: reader.result});
+                localStorage.setItem('hd_pro', JSON.stringify(s));
                 openStorage();
             };
             reader.readAsDataURL(file);
@@ -177,106 +153,120 @@
         function openStorage() {
             const list = document.getElementById('storageList');
             list.innerHTML = "";
-            let storage = JSON.parse(localStorage.getItem('hd_pro_storage') || '[]');
-            storage.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'list-card';
-                div.innerHTML = `<div style="font-weight:bold; margin-bottom:5px;">Project ${new Date(item.id).toLocaleDateString()}</div>
-                                 <video src="${item.data}" style="width:100%; border-radius:4px; margin-bottom:10px;"></video>
-                                 <button class="btn btn-upload" style="margin:0; padding:10px; font-size:0.9rem;" onclick="startScanner('${item.data}')">OPEN VISUALIZER</button>`;
-                list.appendChild(div);
+            let s = JSON.parse(localStorage.getItem('hd_pro') || '[]');
+            s.forEach(item => {
+                const d = document.createElement('div');
+                d.style.background = "white"; d.style.padding = "10px"; d.style.marginBottom = "10px"; d.style.borderRadius="4px";
+                d.innerHTML = `<video src="${item.data}" style="width:100%; border-radius:4px"></video>
+                               <button class="btn btn-orange" style="margin:5px 0 0 0; padding:10px;" onclick="startAI('${item.data}')">OPEN PROJECT</button>`;
+                list.appendChild(d);
             });
             showPage('storagePage');
         }
 
-        // --- PALETTE GENERATION ---
+        // --- COLOR INIT ---
         function initColors() {
-            const preview = document.getElementById('previewGrid');
-            const editor = document.getElementById('editorGrid');
-            appColors.forEach(c => {
-                const div = document.createElement('div');
-                div.className = 'swatch'; div.style.background = c.h;
-                preview.appendChild(div.cloneNode(true));
-                div.onclick = () => { 
-                    activeColor = c; 
-                    document.getElementById('statusText').innerText = "APPLYING: " + c.n.toUpperCase();
+            const pGrid = document.getElementById('paletteGrid');
+            const eGrid = document.getElementById('editorGrid');
+            colors.forEach(c => {
+                const d = document.createElement('div');
+                d.className = 'swatch'; d.style.background = c.h;
+                d.onclick = () => { 
+                    activeColor = hexToRgb(c.h); 
+                    document.getElementById('status').innerText = "APPLIED: " + c.n.toUpperCase();
+                    document.getElementById('viewport').classList.remove('scanning');
+                    document.querySelectorAll('.swatch').forEach(s => s.classList.remove('selected'));
+                    d.classList.add('selected');
                 };
-                editor.appendChild(div);
+                pGrid.appendChild(d.cloneNode(true));
+                eGrid.appendChild(d); // Note: Cloning logic simplified for demo
+                // Re-attach event for editor grid
+                const eItem = eGrid.lastChild;
+                eItem.onclick = () => {
+                    activeColor = hexToRgb(c.h);
+                    document.getElementById('status').innerText = "APPLIED: " + c.n.toUpperCase();
+                    document.getElementById('viewport').classList.remove('scanning');
+                    document.querySelectorAll('.swatch').forEach(s => s.classList.remove('selected'));
+                    eItem.classList.add('selected');
+                }
             });
         }
 
-        // --- STRONG AI ENGINE ---
-        function startScanner(src) {
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
+        }
+
+        // --- THE STRONG AI ENGINE ---
+        function startAI(src) {
             video.src = src;
-            activeColor = null; // Reset
-            document.getElementById('statusText').innerText = "AI SCANNING SURFACE...";
-            showPage('editPage');
+            activeColor = null;
+            document.getElementById('status').innerText = "AI: SCANNING FOR WALLS...";
+            document.getElementById('viewport').classList.add('scanning');
+            showPage('editorPage');
             video.play();
             video.onloadedmetadata = () => {
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
-                requestAnimationFrame(aiLoop);
+                processLoop();
             };
         }
 
-        function aiLoop() {
+        function processLoop() {
             if (video.paused || video.ended) return;
-
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
             const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const data = frame.data;
 
-            // Pre-calculate pulse for the "Scanning" effect
-            const pulse = (Math.sin(Date.now() / 150) + 1) / 2; // Fast pulse
+            // Highlight Pulse Variable
+            const pulse = (Math.sin(Date.now() / 100) + 1) / 2; 
 
             for (let i = 0; i < data.length; i += 4) {
                 const r = data[i], g = data[i+1], b = data[i+2];
 
-                // --- THE AI LOGIC ---
-                // 1. Calculate Brightness (Luma)
-                const luma = 0.299*r + 0.587*g + 0.114*b;
-                
-                // 2. Calculate Saturation (How "colorful" is it?)
-                // White/Grey has very low difference between R, G, and B
+                // 1. ADVANCED WHITE DETECTION (HSL Logic)
                 const max = Math.max(r, g, b);
                 const min = Math.min(r, g, b);
-                const range = max - min; 
+                const l = (max + min) / 2; // Lightness
+                const d = max - min; // Chroma (Saturation roughly)
 
-                // --- THRESHOLDS ---
-                // Brightness > 80: Catches shadows and dim corners
-                // Range < 35: Catches off-white, eggshell, and cream (allows slight warm tints)
-                if (luma > 80 && range < 35) {
+                // Detect "Wall-Like" pixels
+                // Low saturation (d < 30) = White, Grey, Beige, Cream
+                // Medium Lightness (l > 60) = Catches shadows, but not pitch black
+                if (d < 30 && l > 60) {
                     
+                    // 2. SOFT MASKING (The "Stronger" AI Part)
+                    // Instead of ON/OFF, we calculate how "wall-like" it is
+                    // This creates a smooth fade around edges and shadows
+                    let intensity = 1.0;
+                    if (l < 100) intensity = 0.6; // In shadows, paint is less intense
+                    if (d > 20) intensity = 0.5;  // If slightly colorful, blend more
+
                     if (!activeColor) {
-                        // MODE 1: SCANNING (Pulsing Orange Highlight)
-                        // Only add tint, don't replace
-                        data[i] = r + (249 - r) * 0.4 * pulse;   // R moves toward Orange
-                        data[i+1] = g + (99 - g) * 0.4 * pulse;  // G moves toward Orange
-                        data[i+2] = b * 0.5;                     // B gets reduced
+                        // SCANNING MODE: Cyan Highlight
+                        data[i] = r + (0 - r) * 0.5 * pulse;
+                        data[i+1] = g + (255 - g) * 0.5 * pulse;
+                        data[i+2] = b + (255 - b) * 0.5 * pulse;
                     } else {
-                        // MODE 2: PAINTING (Multiply Blend)
-                        // Math: (Original Pixel * New Color) / Intensity
-                        // This preserves the shadows (luma) of the wall
-                        data[i] = (r * activeColor.r) / 240;
-                        data[i+1] = (g * activeColor.g) / 240;
-                        data[i+2] = (b * activeColor.b) / 240;
+                        // PAINTING MODE: Soft Blend
+                        // Original pixel * (1-intensity) + New Color * intensity
+                        data[i] = (r * (1 - intensity)) + (activeColor.r * intensity);
+                        data[i+1] = (g * (1 - intensity)) + (activeColor.g * intensity);
+                        data[i+2] = (b * (1 - intensity)) + (activeColor.b * intensity);
                     }
                 }
             }
             ctx.putImageData(frame, 0, 0);
-            animationId = requestAnimationFrame(aiLoop);
+            animID = requestAnimationFrame(processLoop);
         }
 
-        function stopEditor() {
-            cancelAnimationFrame(animationId);
+        function stopAI() {
+            cancelAnimationFrame(animID);
             video.pause();
             showPage('storagePage');
         }
 
-        function saveEdit() {
-            alert("Project saved to account!");
-            stopEditor();
-        }
+        function saveProject() { alert("Project Saved to Account!"); stopAI(); }
 
         initColors();
     </script>
