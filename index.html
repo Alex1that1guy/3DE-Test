@@ -10,43 +10,31 @@
         * { box-sizing: border-box; touch-action: manipulation; }
         body { margin: 0; font-family: 'Roboto', sans-serif; background: var(--hd-light); color: #333; text-align: center; }
         
-        /* BRANDING */
-        header { 
-            background: var(--hd-orange); padding: 12px; color: white; 
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        .hd-square { 
-            background: var(--hd-orange); border: 2px solid white; color: white; 
-            font-family: 'Oswald', sans-serif; font-size: 0.7rem; font-weight: bold; 
-            padding: 3px 5px; line-height: 1; transform: skew(-10deg); 
-        }
-        h1 { font-family: 'Oswald', sans-serif; margin: 0; font-size: 1.3rem; letter-spacing: 0.5px; }
+        header { background: var(--hd-orange); padding: 12px; color: white; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .hd-square { background: var(--hd-orange); border: 2px solid white; color: white; font-family: 'Oswald', sans-serif; font-size: 0.7rem; font-weight: bold; padding: 3px 5px; line-height: 1; transform: skew(-10deg); }
+        h1 { font-family: 'Oswald', sans-serif; margin: 0; font-size: 1.3rem; letter-spacing: 0.5px; text-transform: uppercase; }
 
         .page { display: none; max-width: 450px; margin: 0 auto; padding: 20px; min-height: 100vh; }
         .active { display: block; }
 
-        /* BUTTONS */
-        .btn { width: 100%; padding: 16px; border: none; border-radius: 4px; font-family: 'Oswald', sans-serif; font-size: 1.1rem; cursor: pointer; margin-bottom: 12px; text-transform: uppercase; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 4px; font-family: 'Oswald', sans-serif; font-size: 1.1rem; cursor: pointer; margin-bottom: 12px; text-transform: uppercase; transition: 0.2s; }
         .btn-orange { background: var(--hd-orange); color: white; }
         .btn-dark { background: var(--hd-dark); color: white; }
+        .btn-download { background: #2ecc71; color: white; }
 
-        /* VIEWP0RT */
         .viewport { position: relative; width: 100%; background: black; border-radius: 8px; overflow: hidden; border: 4px solid var(--hd-orange); }
         video { width: 100%; display: none; }
         canvas { width: 100%; display: block; }
 
-        /* STORAGE CARDS */
-        .list-card { background: white; padding: 15px; margin-bottom: 15px; border-left: 6px solid var(--hd-orange); text-align: left; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-radius: 4px; }
+        .list-card { background: white; padding: 15px; margin-bottom: 15px; border-left: 6px solid var(--hd-orange); text-align: left; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         
-        /* PALETTE & UI */
         .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 20px 0; background: white; padding: 10px; border-radius: 8px; }
         .swatch { height: 45px; border-radius: 4px; cursor: pointer; border: 1px solid #ccc; }
         .swatch.selected { border: 3px solid var(--hd-orange); transform: scale(1.1); }
         
-        .pill { background: #333; color:white; padding: 8px 15px; border-radius: 4px; font-size: 0.8rem; margin-bottom: 10px; display: inline-block; font-family: 'Oswald'; }
-        .slider-box { background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
-        input[type=range] { width: 100%; accent-color: var(--hd-orange); }
+        .status-pill { background: #333; color:white; padding: 8px 15px; border-radius: 4px; font-size: 0.8rem; margin-bottom: 10px; display: inline-block; font-family: 'Oswald'; }
+        .controls { background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: left; }
+        input[type=range] { width: 100%; accent-color: var(--hd-orange); margin-top: 5px; }
     </style>
 </head>
 <body>
@@ -57,63 +45,61 @@
     </header>
 
     <div id="homePage" class="page active">
-        <h2 style="font-family:'Oswald'; margin-top:30px;">Wall Visualizer</h2>
-        <button class="btn btn-orange" onclick="showPage('camPage')">📷 Upload New Room</button>
-        <button class="btn btn-dark" onclick="openStorage()">📦 View Saved Videos</button>
+        <h2 style="font-family:'Oswald'; margin-top:30px;">Visualizer Dashboard</h2>
+        <button class="btn btn-orange" onclick="showPage('uploadPage')">📹 New Room Scan</button>
+        <button class="btn btn-dark" onclick="openStorage()">📦 My Projects</button>
     </div>
 
-    <div id="camPage" class="page">
-        <h2 style="font-family:'Oswald'">New Project</h2>
-        <p>Take a 3-second video of your room. Stable lighting works best.</p>
-        <input type="file" id="fileIn" accept="video/*" capture="environment" style="display:none" onchange="handleUpload(event)">
-        <button class="btn btn-orange" onclick="document.getElementById('fileIn').click()">Open Camera</button>
+    <div id="uploadPage" class="page">
+        <h2 style="font-family:'Oswald'">Record Video</h2>
+        <p>Ensure the wall is clearly visible and recording is at least 3 seconds.</p>
+        <input type="file" id="fileInput" accept="video/*" capture="environment" style="display:none" onchange="saveToStorage(event)">
+        <button class="btn btn-orange" onclick="document.getElementById('fileInput').click()">Capture Video</button>
         <button class="btn btn-dark" onclick="showPage('homePage')">Back</button>
     </div>
 
     <div id="storagePage" class="page">
-        <h2 style="font-family:'Oswald'">My Video Storage</h2>
+        <h2 style="font-family:'Oswald'">Project Library</h2>
         <div id="storageList"></div>
         <button class="btn btn-dark" onclick="showPage('homePage')">Main Menu</button>
     </div>
 
     <div id="editPage" class="page">
-        <div class="pill" id="status">1. TAP THE WALL</div>
+        <div class="status-pill" id="status">1. TAP THE WALL TO TARGET</div>
         
-        <div class="viewport" onclick="handleTap(event)">
-            <video id="vid" loop muted playsinline crossorigin="anonymous"></video>
-            <canvas id="canv"></canvas>
-            <div style="position:absolute; bottom:10px; right:10px; opacity:0.8; pointer-events:none;">
+        <div class="viewport" onclick="setTarget(event)">
+            <video id="sourceVid" loop muted playsinline crossorigin="anonymous"></video>
+            <canvas id="outputCanvas"></canvas>
+            <div style="position:absolute; bottom:10px; right:10px; pointer-events:none;">
                 <div class="hd-square">THE<br>HOME<br>DEPOT</div>
             </div>
         </div>
 
-        <div class="slider-box">
-            <label style="font-size:0.75rem; font-weight:bold; display:block; margin-bottom:5px;">ADJUST AI STRENGTH</label>
-            <input type="range" id="tolerance" min="10" max="120" value="45">
+        <div class="controls">
+            <label style="font-weight:bold; font-size:0.8rem;">AI MATCH SENSITIVITY</label>
+            <input type="range" id="sens" min="5" max="100" value="30">
         </div>
 
-        <div class="grid" id="editorGrid"></div>
+        <div class="grid" id="colorGrid"></div>
         
-        <div style="display:flex; gap:10px;">
-            <button class="btn btn-orange" onclick="alert('Project Saved!')">Save</button>
-            <button class="btn btn-dark" onclick="stopAI()">Exit</button>
-        </div>
+        <button class="btn btn-download" onclick="downloadImage()">📸 Save Photo to Device</button>
+        <button class="btn btn-dark" onclick="stopEditor()">Close Editor</button>
     </div>
 
     <script>
-        const colors = [
-            {n:'Ultra Pure White', h:'#FFFFFF'}, {n:'Swiss Coffee', h:'#F1EFE0'},
-            {n:'Slate Grey', h:'#708090'}, {n:'Naval', h:'#202A44'},
-            {n:'Sage', h:'#778875'}, {n:'Cinnamon', h:'#9E4825'},
-            {n:'Mustard', h:'#D8A728'}, {n:'Terracotta', h:'#C46247'},
-            {n:'Teal', h:'#006D75'}, {n:'Deep Charcoal', h:'#333333'}
+        const paints = [
+            {n:'Pure White', h:'#FFFFFF'}, {n:'Swiss Coffee', h:'#F1EFE0'},
+            {n:'Slate Grey', h:'#708090'}, {n:'Naval Blue', h:'#202A44'},
+            {n:'Sage Green', h:'#778875'}, {n:'Cinnamon', h:'#9E4825'},
+            {n:'Harvest Gold', h:'#D8A728'}, {n:'Terra Cotta', h:'#C46247'},
+            {n:'Teal Blue', h:'#006D75'}, {n:'Charcoal', h:'#333333'}
         ];
 
-        let activeColor = null; 
-        let wallTarget = null;
-        let animID;
-        const video = document.getElementById('vid');
-        const canvas = document.getElementById('canv');
+        let activeRGB = null; 
+        let wallTargetHSL = null;
+        let frameId;
+        const video = document.getElementById('sourceVid');
+        const canvas = document.getElementById('outputCanvas');
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
         function showPage(id) {
@@ -121,16 +107,16 @@
             document.getElementById(id).classList.add('active');
         }
 
-        // --- THE STORAGE SYSTEM ---
-        function handleUpload(e) {
+        // --- STORAGE LOGIC ---
+        function saveToStorage(e) {
             const file = e.target.files[0];
             if(!file) return;
             const reader = new FileReader();
             reader.onload = () => {
-                let storage = JSON.parse(localStorage.getItem('hd_storage_v3') || '[]');
-                storage.push({id: Date.now(), data: reader.result});
-                localStorage.setItem('hd_storage_v3', JSON.stringify(storage));
-                openStorage(); // Go to storage immediately after upload
+                let db = JSON.parse(localStorage.getItem('hd_v4_storage') || '[]');
+                db.push({id: Date.now(), data: reader.result});
+                localStorage.setItem('hd_v4_storage', JSON.stringify(db));
+                openStorage();
             };
             reader.readAsDataURL(file);
         }
@@ -138,42 +124,106 @@
         function openStorage() {
             const list = document.getElementById('storageList');
             list.innerHTML = "";
-            let storage = JSON.parse(localStorage.getItem('hd_storage_v3') || '[]');
-            
-            if(storage.length === 0) {
-                list.innerHTML = "<p>No videos saved yet.</p>";
-            } else {
-                storage.forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = "list-card";
-                    card.innerHTML = `
-                        <strong>Captured Room</strong>
-                        <video src="${item.data}" style="width:100%; border-radius:4px; margin:10px 0;"></video>
-                        <button class="btn btn-orange" style="margin:0; padding:10px;" onclick="startAI('${item.data}')">Analyze & Paint</button>
-                        <button style="color:red; background:none; border:none; margin-top:10px; cursor:pointer;" onclick="deleteVideo(${item.id})">Delete Video</button>
-                    `;
-                    list.appendChild(card);
-                });
-            }
+            let db = JSON.parse(localStorage.getItem('hd_v4_storage') || '[]');
+            if(db.length === 0) list.innerHTML = "<p>No project videos found.</p>";
+            db.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "list-card";
+                card.innerHTML = `
+                    <strong>Scan: ${new Date(item.id).toLocaleTimeString()}</strong>
+                    <video src="${item.data}" style="width:100%; border-radius:4px; margin-top:8px;"></video>
+                    <button class="btn btn-orange" style="margin-top:8px; padding:10px;" onclick="initEditor('${item.data}')">Open Visualizer</button>
+                    <button style="color:red; background:none; border:none; width:100%; padding:5px; cursor:pointer;" onclick="deleteProj(${item.id})">Delete</button>
+                `;
+                list.appendChild(card);
+            });
             showPage('storagePage');
         }
 
-        function deleteVideo(id) {
-            let storage = JSON.parse(localStorage.getItem('hd_storage_v3') || '[]');
-            storage = storage.filter(i => i.id !== id);
-            localStorage.setItem('hd_storage_v3', JSON.stringify(storage));
+        function deleteProj(id) {
+            let db = JSON.parse(localStorage.getItem('hd_v4_storage') || '[]');
+            localStorage.setItem('hd_v4_storage', JSON.stringify(db.filter(i => i.id !== id)));
             openStorage();
         }
 
-        // --- EDITOR LOGIC ---
-        function initColors() {
-            const grid = document.getElementById('editorGrid');
-            colors.forEach(c => {
+        // --- AI LOGIC ---
+        function initEditor(src) {
+            video.src = src;
+            wallTargetHSL = null; activeRGB = null;
+            document.getElementById('status').innerText = "1. TAP THE WALL TO TARGET";
+            showPage('editPage');
+            video.play();
+            video.onloadedmetadata = () => {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                loop();
+            };
+        }
+
+        // Convert RGB to HSL for better "Wall vs Person" detection
+        function rgbToHsl(r, g, b) {
+            r /= 255; g /= 255; b /= 255;
+            const max = Math.max(r, g, b), min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+            if (max === min) { h = s = 0; } 
+            else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h /= 6;
+            }
+            return [h * 360, s * 100, l * 100];
+        }
+
+        function setTarget(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+            const p = ctx.getImageData(x, y, 1, 1).data;
+            wallTargetHSL = rgbToHsl(p[0], p[1], p[2]);
+            document.getElementById('status').innerText = "2. PICK A COLOR BELOW";
+        }
+
+        function loop() {
+            if (video.paused || video.ended) return;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = frame.data;
+            const sens = document.getElementById('sens').value;
+
+            if (wallTargetHSL && activeRGB) {
+                for (let i = 0; i < data.length; i += 4) {
+                    const hsl = rgbToHsl(data[i], data[i+1], data[i+2]);
+                    
+                    // Strong AI: Check if Hue and Saturation match the wall
+                    const hueDiff = Math.abs(hsl[0] - wallTargetHSL[0]);
+                    const satDiff = Math.abs(hsl[1] - wallTargetHSL[1]);
+                    const lumDiff = Math.abs(hsl[2] - wallTargetHSL[2]);
+
+                    // If it matches the tapped wall "signature"
+                    if (hueDiff < sens && satDiff < sens && lumDiff < sens * 1.5) {
+                        data[i] = (data[i] * activeRGB.r) / 255;
+                        data[i+1] = (data[i+1] * activeRGB.g) / 255;
+                        data[i+2] = (data[i+2] * activeRGB.b) / 255;
+                    }
+                }
+            }
+            ctx.putImageData(frame, 0, 0);
+            frameId = requestAnimationFrame(loop);
+        }
+
+        // --- UI UTILS ---
+        function initGrid() {
+            const grid = document.getElementById('colorGrid');
+            paints.forEach(p => {
                 const sw = document.createElement('div');
-                sw.className = 'swatch'; sw.style.background = c.h;
-                sw.onclick = () => { 
-                    activeColor = hexToRgb(c.h); 
-                    document.getElementById('status').innerText = "COLOR: " + c.n.toUpperCase();
+                sw.className = 'swatch'; sw.style.background = p.h;
+                sw.onclick = () => {
+                    activeRGB = hexToRgb(p.h);
                     document.querySelectorAll('.swatch').forEach(s => s.classList.remove('selected'));
                     sw.classList.add('selected');
                 };
@@ -182,70 +232,20 @@
         }
 
         function hexToRgb(hex) {
-            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
+            const r = parseInt(hex.slice(1,3), 16), g = parseInt(hex.slice(3,5), 16), b = parseInt(hex.slice(5,7), 16);
+            return {r, g, b};
         }
 
-        function startAI(src) {
-            video.src = src;
-            wallTarget = null;
-            activeColor = null;
-            document.getElementById('status').innerText = "1. TAP THE WALL";
-            showPage('editPage');
-            video.play();
-            video.onloadedmetadata = () => {
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                process();
-            };
+        function stopEditor() { cancelAnimationFrame(frameId); video.pause(); showPage('storagePage'); }
+
+        function downloadImage() {
+            const link = document.createElement('a');
+            link.download = 'my-hd-project.png';
+            link.href = canvas.toDataURL();
+            link.click();
         }
 
-        function handleTap(e) {
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            const x = (e.clientX - rect.left) * scaleX;
-            const y = (e.clientY - rect.top) * scaleY;
-
-            const pixel = ctx.getImageData(x, y, 1, 1).data;
-            wallTarget = { r: pixel[0], g: pixel[1], b: pixel[2] };
-            document.getElementById('status').innerText = "2. PICK A COLOR";
-        }
-
-        function process() {
-            if (video.paused || video.ended) return;
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const data = frame.data;
-            const tol = document.getElementById('tolerance').value;
-
-            if (wallTarget && activeColor) {
-                for (let i = 0; i < data.length; i += 4) {
-                    const r = data[i], g = data[i+1], b = data[i+2];
-                    
-                    // Strong Euclidean Math for color matching
-                    const diff = Math.sqrt(
-                        (r - wallTarget.r)**2 + (g - wallTarget.g)**2 + (b - wallTarget.b)**2
-                    );
-
-                    if (diff < tol) {
-                        data[i] = (r * activeColor.r) / 255;
-                        data[i+1] = (g * activeColor.g) / 255;
-                        data[i+2] = (b * activeColor.b) / 255;
-                    }
-                }
-            }
-            ctx.putImageData(frame, 0, 0);
-            animID = requestAnimationFrame(process);
-        }
-
-        function stopAI() {
-            cancelAnimationFrame(animID);
-            video.pause();
-            showPage('storagePage');
-        }
-
-        initColors();
+        initGrid();
     </script>
 </body>
 </html>
