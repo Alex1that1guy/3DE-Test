@@ -10,7 +10,7 @@
         * { box-sizing: border-box; touch-action: manipulation; }
         body { margin: 0; font-family: 'Roboto', sans-serif; background: var(--hd-light); color: #333; text-align: center; }
         
-        /* HEADER */
+        /* BRANDING */
         header { 
             background: var(--hd-orange); padding: 12px; color: white; 
             display: flex; align-items: center; justify-content: center; gap: 10px;
@@ -30,28 +30,22 @@
         .btn { width: 100%; padding: 16px; border: none; border-radius: 4px; font-family: 'Oswald', sans-serif; font-size: 1.1rem; cursor: pointer; margin-bottom: 12px; text-transform: uppercase; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .btn-orange { background: var(--hd-orange); color: white; }
         .btn-dark { background: var(--hd-dark); color: white; }
-        .btn-outline { background: white; border: 2px solid var(--hd-orange); color: var(--hd-orange); }
 
         /* VIEWP0RT */
-        .viewport { position: relative; width: 100%; background: black; border-radius: 8px; overflow: hidden; border: 4px solid var(--hd-orange); touch-action: none; }
+        .viewport { position: relative; width: 100%; background: black; border-radius: 8px; overflow: hidden; border: 4px solid var(--hd-orange); }
         video { width: 100%; display: none; }
         canvas { width: 100%; display: block; }
 
-        /* CROSSHAIR INSTRUCTION */
-        .tap-instruction {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.7); color: white; padding: 10px 20px; border-radius: 20px;
-            font-weight: bold; pointer-events: none; opacity: 1; transition: opacity 0.5s;
-        }
-
-        /* PALETTE */
+        /* STORAGE CARDS */
+        .list-card { background: white; padding: 15px; margin-bottom: 15px; border-left: 6px solid var(--hd-orange); text-align: left; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-radius: 4px; }
+        
+        /* PALETTE & UI */
         .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 20px 0; background: white; padding: 10px; border-radius: 8px; }
         .swatch { height: 45px; border-radius: 4px; cursor: pointer; border: 1px solid #ccc; }
-        .swatch.selected { border: 3px solid var(--hd-orange); transform: scale(1.1); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .swatch.selected { border: 3px solid var(--hd-orange); transform: scale(1.1); }
         
-        .pill { background: #333; color:white; padding: 8px 15px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; display: inline-block; font-family: 'Oswald'; letter-spacing: 1px; }
-        
-        .slider-container { background: white; padding: 10px; margin-top: 10px; border-radius: 8px; }
+        .pill { background: #333; color:white; padding: 8px 15px; border-radius: 4px; font-size: 0.8rem; margin-bottom: 10px; display: inline-block; font-family: 'Oswald'; }
+        .slider-box { background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
         input[type=range] { width: 100%; accent-color: var(--hd-orange); }
     </style>
 </head>
@@ -63,43 +57,45 @@
     </header>
 
     <div id="homePage" class="page active">
-        <h2 style="font-family:'Oswald'; margin-top:30px;">Visualizer Tools</h2>
-        <button class="btn btn-orange" onclick="showPage('camPage')">📷 Start New Scan</button>
-        <button class="btn btn-dark" onclick="openStorage()">📦 My Projects</button>
+        <h2 style="font-family:'Oswald'; margin-top:30px;">Wall Visualizer</h2>
+        <button class="btn btn-orange" onclick="showPage('camPage')">📷 Upload New Room</button>
+        <button class="btn btn-dark" onclick="openStorage()">📦 View Saved Videos</button>
     </div>
 
     <div id="camPage" class="page">
-        <h2 style="font-family:'Oswald'">Capture Room</h2>
-        <p>Record a stable 3-second video of your room.</p>
+        <h2 style="font-family:'Oswald'">New Project</h2>
+        <p>Take a 3-second video of your room. Stable lighting works best.</p>
         <input type="file" id="fileIn" accept="video/*" capture="environment" style="display:none" onchange="handleUpload(event)">
-        <button class="btn btn-orange" onclick="document.getElementById('fileIn').click()">Record Video</button>
+        <button class="btn btn-orange" onclick="document.getElementById('fileIn').click()">Open Camera</button>
         <button class="btn btn-dark" onclick="showPage('homePage')">Back</button>
     </div>
 
     <div id="storagePage" class="page">
-        <h2 style="font-family:'Oswald'">Saved Projects</h2>
+        <h2 style="font-family:'Oswald'">My Video Storage</h2>
         <div id="storageList"></div>
         <button class="btn btn-dark" onclick="showPage('homePage')">Main Menu</button>
     </div>
 
-    <div id="editorPage" class="page">
-        <div class="pill" id="status">TAP THE WALL TO START</div>
+    <div id="editPage" class="page">
+        <div class="pill" id="status">1. TAP THE WALL</div>
         
-        <div class="viewport" id="viewport" onclick="handleTap(event)">
+        <div class="viewport" onclick="handleTap(event)">
             <video id="vid" loop muted playsinline crossorigin="anonymous"></video>
             <canvas id="canv"></canvas>
-            <div id="tapGuide" class="tap-instruction">👆 TAP WALL HERE</div>
+            <div style="position:absolute; bottom:10px; right:10px; opacity:0.8; pointer-events:none;">
+                <div class="hd-square">THE<br>HOME<br>DEPOT</div>
+            </div>
         </div>
 
-        <div class="slider-container">
-            <label style="font-size:0.8rem; font-weight:bold;">Match Sensitivity</label>
-            <input type="range" id="toleranceSlider" min="10" max="150" value="40">
+        <div class="slider-box">
+            <label style="font-size:0.75rem; font-weight:bold; display:block; margin-bottom:5px;">ADJUST AI STRENGTH</label>
+            <input type="range" id="tolerance" min="10" max="120" value="45">
         </div>
 
         <div class="grid" id="editorGrid"></div>
         
         <div style="display:flex; gap:10px;">
-            <button class="btn btn-orange" onclick="saveProject()">Save</button>
+            <button class="btn btn-orange" onclick="alert('Project Saved!')">Save</button>
             <button class="btn btn-dark" onclick="stopAI()">Exit</button>
         </div>
     </div>
@@ -107,35 +103,34 @@
     <script>
         const colors = [
             {n:'Ultra Pure White', h:'#FFFFFF'}, {n:'Swiss Coffee', h:'#F1EFE0'},
-            {n:'Polar Bear', h:'#F5F6F0'}, {n:'Slate Grey', h:'#708090'},
-            {n:'Naval', h:'#202A44'}, {n:'Sage', h:'#778875'},
-            {n:'Cinnamon', h:'#9E4825'}, {n:'Mustard', h:'#D8A728'},
-            {n:'Terracotta', h:'#C46247'}, {n:'Teal', h:'#006D75'}
+            {n:'Slate Grey', h:'#708090'}, {n:'Naval', h:'#202A44'},
+            {n:'Sage', h:'#778875'}, {n:'Cinnamon', h:'#9E4825'},
+            {n:'Mustard', h:'#D8A728'}, {n:'Terracotta', h:'#C46247'},
+            {n:'Teal', h:'#006D75'}, {n:'Deep Charcoal', h:'#333333'}
         ];
 
         let activeColor = null; 
-        let targetWallColor = null; // Stores the specific RGB of the wall you tap
+        let wallTarget = null;
         let animID;
         const video = document.getElementById('vid');
         const canvas = document.getElementById('canv');
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
-        const toleranceSlider = document.getElementById('toleranceSlider');
 
-        // --- NAVIGATION ---
         function showPage(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
 
+        // --- THE STORAGE SYSTEM ---
         function handleUpload(e) {
             const file = e.target.files[0];
             if(!file) return;
             const reader = new FileReader();
             reader.onload = () => {
-                let s = JSON.parse(localStorage.getItem('hd_pro_v2') || '[]');
-                s.push({id: Date.now(), data: reader.result});
-                localStorage.setItem('hd_pro_v2', JSON.stringify(s));
-                openStorage();
+                let storage = JSON.parse(localStorage.getItem('hd_storage_v3') || '[]');
+                storage.push({id: Date.now(), data: reader.result});
+                localStorage.setItem('hd_storage_v3', JSON.stringify(storage));
+                openStorage(); // Go to storage immediately after upload
             };
             reader.readAsDataURL(file);
         }
@@ -143,29 +138,46 @@
         function openStorage() {
             const list = document.getElementById('storageList');
             list.innerHTML = "";
-            let s = JSON.parse(localStorage.getItem('hd_pro_v2') || '[]');
-            s.forEach(item => {
-                const d = document.createElement('div');
-                d.style.background = "white"; d.style.padding = "10px"; d.style.marginBottom = "10px"; d.style.borderRadius="4px";
-                d.innerHTML = `<video src="${item.data}" style="width:100%; border-radius:4px"></video>
-                               <button class="btn btn-orange" style="margin-top:5px; padding:10px;" onclick="startAI('${item.data}')">OPEN PROJECT</button>`;
-                list.appendChild(d);
-            });
+            let storage = JSON.parse(localStorage.getItem('hd_storage_v3') || '[]');
+            
+            if(storage.length === 0) {
+                list.innerHTML = "<p>No videos saved yet.</p>";
+            } else {
+                storage.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = "list-card";
+                    card.innerHTML = `
+                        <strong>Captured Room</strong>
+                        <video src="${item.data}" style="width:100%; border-radius:4px; margin:10px 0;"></video>
+                        <button class="btn btn-orange" style="margin:0; padding:10px;" onclick="startAI('${item.data}')">Analyze & Paint</button>
+                        <button style="color:red; background:none; border:none; margin-top:10px; cursor:pointer;" onclick="deleteVideo(${item.id})">Delete Video</button>
+                    `;
+                    list.appendChild(card);
+                });
+            }
             showPage('storagePage');
         }
 
-        // --- INIT COLORS ---
+        function deleteVideo(id) {
+            let storage = JSON.parse(localStorage.getItem('hd_storage_v3') || '[]');
+            storage = storage.filter(i => i.id !== id);
+            localStorage.setItem('hd_storage_v3', JSON.stringify(storage));
+            openStorage();
+        }
+
+        // --- EDITOR LOGIC ---
         function initColors() {
             const grid = document.getElementById('editorGrid');
             colors.forEach(c => {
-                const d = document.createElement('div');
-                d.className = 'swatch'; d.style.background = c.h;
-                d.onclick = () => { 
+                const sw = document.createElement('div');
+                sw.className = 'swatch'; sw.style.background = c.h;
+                sw.onclick = () => { 
                     activeColor = hexToRgb(c.h); 
+                    document.getElementById('status').innerText = "COLOR: " + c.n.toUpperCase();
                     document.querySelectorAll('.swatch').forEach(s => s.classList.remove('selected'));
-                    d.classList.add('selected');
+                    sw.classList.add('selected');
                 };
-                grid.appendChild(d);
+                grid.appendChild(sw);
             });
         }
 
@@ -174,72 +186,57 @@
             return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
         }
 
-        // --- TOUCH TARGETING LOGIC ---
         function startAI(src) {
             video.src = src;
-            activeColor = null; 
-            targetWallColor = null;
-            document.getElementById('status').innerText = "TAP THE WALL TO START";
-            document.getElementById('tapGuide').style.opacity = "1";
-            showPage('editorPage');
+            wallTarget = null;
+            activeColor = null;
+            document.getElementById('status').innerText = "1. TAP THE WALL";
+            showPage('editPage');
             video.play();
             video.onloadedmetadata = () => {
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
-                processLoop();
+                process();
             };
         }
 
         function handleTap(e) {
-            // Calculate tap position relative to video/canvas
             const rect = canvas.getBoundingClientRect();
             const scaleX = canvas.width / rect.width;
             const scaleY = canvas.height / rect.height;
             const x = (e.clientX - rect.left) * scaleX;
             const y = (e.clientY - rect.top) * scaleY;
 
-            // Sample the color at that pixel
             const pixel = ctx.getImageData(x, y, 1, 1).data;
-            targetWallColor = { r: pixel[0], g: pixel[1], b: pixel[2] };
-
-            document.getElementById('status').innerText = "TARGET LOCKED: SELECT COLOR";
-            document.getElementById('tapGuide').style.opacity = "0";
+            wallTarget = { r: pixel[0], g: pixel[1], b: pixel[2] };
+            document.getElementById('status').innerText = "2. PICK A COLOR";
         }
 
-        function processLoop() {
+        function process() {
             if (video.paused || video.ended) return;
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
             const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const data = frame.data;
-            const tolerance = parseInt(toleranceSlider.value); // User adjustable sensitivity
+            const tol = document.getElementById('tolerance').value;
 
-            if (targetWallColor && activeColor) {
+            if (wallTarget && activeColor) {
                 for (let i = 0; i < data.length; i += 4) {
                     const r = data[i], g = data[i+1], b = data[i+2];
-
-                    // --- MATCHING ALGORITHM ---
-                    // Calculate "Distance" between current pixel and the Tapped Wall Color
-                    // If distance is small, it means this pixel is part of the wall
-                    const dist = Math.sqrt(
-                        (r - targetWallColor.r) ** 2 +
-                        (g - targetWallColor.g) ** 2 +
-                        (b - targetWallColor.b) ** 2
+                    
+                    // Strong Euclidean Math for color matching
+                    const diff = Math.sqrt(
+                        (r - wallTarget.r)**2 + (g - wallTarget.g)**2 + (b - wallTarget.b)**2
                     );
 
-                    if (dist < tolerance) {
-                        // Apply Paint (Multiply Blend for shadows)
+                    if (diff < tol) {
                         data[i] = (r * activeColor.r) / 255;
                         data[i+1] = (g * activeColor.g) / 255;
                         data[i+2] = (b * activeColor.b) / 255;
                     }
                 }
-            } else if (!targetWallColor) {
-                // Not targeted yet? Show a subtle "Scanning" tint to encourage tapping
-                // (Optional visual cue)
             }
-
             ctx.putImageData(frame, 0, 0);
-            animID = requestAnimationFrame(processLoop);
+            animID = requestAnimationFrame(process);
         }
 
         function stopAI() {
@@ -247,8 +244,6 @@
             video.pause();
             showPage('storagePage');
         }
-
-        function saveProject() { alert("Project Saved!"); stopAI(); }
 
         initColors();
     </script>
