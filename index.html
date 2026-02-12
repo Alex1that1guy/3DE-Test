@@ -3,262 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Depot Pro Vision v5</title>
+    <title>Home Depot Pro Vision v6</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        :root { --hd-orange: #F96302; --hd-dark: #222; --hd-light: #f9f9f9; }
+        :root { --hd-orange: #F96302; --hd-dark: #222; --hd-light: #f4f4f4; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; font-family: 'Roboto', sans-serif; background: var(--hd-light); color: #333; overflow-x: hidden; }
+        body { margin: 0; font-family: 'Roboto', sans-serif; background: var(--hd-light); color: #333; }
         
-        /* BRANDING */
         header { background: var(--hd-orange); padding: 15px; color: white; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 10px rgba(0,0,0,0.2); position: sticky; top: 0; z-index: 1000; }
-        .logo-group { display: flex; align-items: center; gap: 10px; }
         .hd-square { background: var(--hd-orange); border: 2px solid white; color: white; font-family: 'Oswald', sans-serif; font-size: 0.7rem; font-weight: bold; padding: 4px 6px; line-height: 1; transform: skew(-10deg); }
-        header h1 { font-family: 'Oswald', sans-serif; margin: 0; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; }
+        header h1 { font-family: 'Oswald', sans-serif; margin: 0; font-size: 1.2rem; text-transform: uppercase; }
 
-        .page { display: none; max-width: 500px; margin: 0 auto; padding: 20px; animation: fadeIn 0.3s ease; }
+        .page { display: none; max-width: 500px; margin: 0 auto; padding: 20px; }
         .active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* DASHBOARD CARDS */
-        .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; border: 1px solid #eee; }
+        .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
         .btn { width: 100%; padding: 16px; border: none; border-radius: 6px; font-family: 'Oswald', sans-serif; font-size: 1.1rem; cursor: pointer; text-transform: uppercase; transition: 0.2s; display: block; margin-bottom: 10px; text-decoration: none; text-align: center; }
         .btn-orange { background: var(--hd-orange); color: white; }
         .btn-dark { background: var(--hd-dark); color: white; }
-        .btn-outline { background: transparent; border: 2px solid var(--hd-orange); color: var(--hd-orange); }
 
-        /* EDITOR UI */
-        .viewport-container { position: relative; width: 100%; border-radius: 12px; overflow: hidden; background: #000; border: 4px solid var(--hd-dark); margin-bottom: 15px; }
-        canvas { width: 100%; display: block; cursor: crosshair; }
+        /* GALLERY SYSTEM */
+        #gallery { display: grid; gap: 15px; }
+        .project-item { background: white; border-radius: 10px; overflow: hidden; border: 1px solid #ddd; padding: 10px; }
+        .thumb-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+
+        /* EDITOR */
+        .viewport { position: relative; width: 100%; border-radius: 8px; overflow: hidden; background: #000; border: 3px solid var(--hd-dark); }
+        canvas { width: 100%; display: block; }
         video { display: none; }
-        
-        .ai-badge { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); color: #00ff00; padding: 4px 10px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; font-family: monospace; }
-        
-        /* STORAGE GALLERY */
-        .gallery-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
-        .project-item { background: white; border-radius: 10px; overflow: hidden; border: 1px solid #ddd; position: relative; }
-        .project-item video { display: block; width: 100%; height: 180px; object-fit: cover; background: #000; }
-        .project-info { padding: 12px; display: flex; justify-content: space-between; align-items: center; }
-        .delete-btn { color: #ff4444; border: none; background: none; font-size: 1.2rem; cursor: pointer; }
+        .ai-status { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); color: #0f0; padding: 5px 10px; font-size: 0.7rem; border-radius: 4px; font-family: monospace; }
 
-        /* COLOR ENGINE UI */
-        .swatch-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; scrollbar-width: none; }
-        .swatch { min-width: 50px; height: 50px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); flex-shrink: 0; cursor: pointer; }
+        /* COLOR SWATCHES */
+        .swatch-box { display: flex; gap: 10px; overflow-x: auto; padding: 15px 0; }
+        .swatch { min-width: 50px; height: 50px; border-radius: 50%; border: 3px solid white; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .swatch.selected { border-color: var(--hd-orange); transform: scale(1.1); }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo-group">
-            <div class="hd-square">THE<br>HOME<br>DEPOT</div>
-            <h1>Pro Vision AI</h1>
-        </div>
-        <div id="storage-count" style="font-size: 0.7rem; opacity: 0.8;">0 Projects</div>
-    </header>
+<header>
+    <div style="display:flex; align-items:center; gap:10px;">
+        <div class="hd-square">THE<br>HOME<br>DEPOT</div>
+        <h1>Pro Vision v6</h1>
+    </div>
+</header>
 
-    <div id="homePage" class="page active">
-        <div class="card">
-            <h2 style="font-family:'Oswald'; margin-top:0;">New Project</h2>
-            <p style="font-size: 0.9rem; color: #666;">Record a wall to begin AI surface mapping.</p>
-            <input type="file" id="camInput" accept="video/*" capture="environment" style="display:none" onchange="handleNewUpload(event)">
-            <button class="btn btn-orange" onclick="document.getElementById('camInput').click()">Record Video</button>
-        </div>
-        <button class="btn btn-dark" onclick="nav('storagePage')">📦 My Project Gallery</button>
+<div id="homePage" class="page active">
+    <div class="card">
+        <h2 style="font-family:'Oswald'; margin:0 0 10px 0;">New Room Project</h2>
+        <p style="font-size: 0.9rem; color: #666;">Record your wall. Our AI handles the rest.</p>
+        <input type="file" id="videoCapture" accept="video/*" capture="environment" style="display:none" onchange="processFile(event)">
+        <button class="btn btn-orange" onclick="document.getElementById('videoCapture').click()">Start Recording</button>
+    </div>
+    <button class="btn btn-dark" onclick="openGallery()">📦 My Saved Projects</button>
+</div>
+
+<div id="galleryPage" class="page">
+    <h2 style="font-family:'Oswald'">Project Library</h2>
+    <div id="gallery"></div>
+    <button class="btn btn-dark" style="margin-top:20px;" onclick="showPage('homePage')">Main Menu</button>
+</div>
+
+<div id="editorPage" class="page">
+    <div class="viewport">
+        <div class="ai-status" id="aiLabel">AI: STANDBY</div>
+        <video id="vSource" loop muted playsinline></video>
+        <canvas id="cOutput" onclick="targetWall(event)"></canvas>
+    </div>
+    
+    <div style="margin:15px 0;">
+        <label style="font-size: 0.7rem; font-weight: bold;">AI SENSITIVITY</label>
+        <input type="range" id="sens" min="5" max="100" value="35" style="width:100%; accent-color:var(--hd-orange);">
     </div>
 
-    <div id="storagePage" class="page">
-        <h2 style="font-family:'Oswald'">Saved Projects</h2>
-        <div id="gallery" class="gallery-grid"></div>
-        <button class="btn btn-outline" style="margin-top:20px;" onclick="nav('homePage')">Back to Home</button>
-    </div>
+    <div class="swatch-box" id="palette"></div>
+    
+    <button class="btn btn-orange" onclick="downloadPhoto()">📸 Save To Camera Roll</button>
+    <button class="btn btn-dark" onclick="closeEditor()">Back</button>
+</div>
 
-    <div id="editorPage" class="page">
-        <div class="viewport-container" id="vp">
-            <div class="ai-badge" id="aiStatus">AI: READY</div>
-            <video id="vSource" loop muted playsinline></video>
-            <canvas id="cOutput" onclick="pickWall(event)"></canvas>
-            <div id="tapInstruction" style="position:absolute; top:50%; width:100%; text-align:center; color:white; pointer-events:none; font-family:'Oswald'; text-shadow:0 2px 4px #000;">
-                TAP WALL TO LOCK AI
-            </div>
-        </div>
+<script>
+    const paintList = [
+        {h:'#FFFFFF'}, {h:'#F1EFE0'}, {h:'#B0A99F'}, {h:'#202A44'},
+        {h:'#778875'}, {h:'#C46247'}, {h:'#D8A728'}, {h:'#333333'}
+    ];
 
-        <div class="card" style="padding:10px;">
-            <div style="display:flex; justify-content:space-between; font-size:0.7rem; font-weight:bold; margin-bottom:5px;">
-                <span>MATCH PRECISION</span>
-                <span id="tolVal">40</span>
-            </div>
-            <input type="range" id="tolerance" min="5" max="100" value="40" oninput="document.getElementById('tolVal').innerText=this.value">
-        </div>
+    let db;
+    let selectedPaint = null;
+    let wallTarget = null;
+    let loop;
+    const v = document.getElementById('vSource');
+    const c = document.getElementById('cOutput');
+    const ctx = c.getContext('2d', {willReadFrequently: true});
 
-        <div class="swatch-scroll" id="swatchList"></div>
-        
-        <button class="btn btn-orange" onclick="downloadResult()">📸 Download High-Res Photo</button>
-        <button class="btn btn-dark" onclick="closeEditor()">Exit Editor</button>
-    </div>
+    // --- 1. PRO STORAGE (INDEXED DB) ---
+    const request = indexedDB.open("HD_ProVision_DB", 1);
+    request.onupgradeneeded = (e) => {
+        db = e.target.result;
+        db.createObjectStore("videos", { keyPath: "id", autoIncrement: true });
+    };
+    request.onsuccess = (e) => db = e.target.result;
 
-    <script>
-        const paints = [
-            {n:'Classic White', h:'#FFFFFF'}, {n:'Swiss Coffee', h:'#F1EFE0'},
-            {n:'Greige', h:'#B0A99F'}, {n:'Naval', h:'#202A44'},
-            {n:'Blackwood', h:'#2C2C2B'}, {n:'Terra Cotta', h:'#C46247'},
-            {n:'Heritage Sage', h:'#778875'}, {n:'Pacific Teal', h:'#006D75'}
-        ];
+    function processFile(e) {
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+            const tx = db.transaction("videos", "readwrite");
+            tx.objectStore("videos").add({ data: reader.result, date: new Date().toLocaleString() });
+            tx.oncomplete = () => openGallery();
+        };
+        reader.readAsDataURL(file);
+    }
 
-        let selectedRGB = null; 
-        let wallTarget = null;
-        let loop;
-        const v = document.getElementById('vSource');
-        const c = document.getElementById('cOutput');
-        const ctx = c.getContext('2d', {willReadFrequently: true});
-
-        // Navigation
-        function nav(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            if(id === 'storagePage') renderGallery();
-        }
-
-        // --- BETTER STORAGE SYSTEM ---
-        function handleNewUpload(e) {
-            const file = e.target.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = () => {
-                const projects = JSON.parse(localStorage.getItem('hd_pro_v5') || '[]');
-                projects.unshift({id: Date.now(), data: reader.result});
-                localStorage.setItem('hd_pro_v5', JSON.stringify(projects));
-                updateCount();
-                nav('storagePage');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function renderGallery() {
-            const container = document.getElementById('gallery');
-            const projects = JSON.parse(localStorage.getItem('hd_pro_v5') || '[]');
-            container.innerHTML = projects.length ? "" : "<p>No projects found.</p>";
-            projects.forEach(p => {
+    function openGallery() {
+        showPage('galleryPage');
+        const container = document.getElementById('gallery');
+        container.innerHTML = "Loading...";
+        const tx = db.transaction("videos", "readonly");
+        const store = tx.objectStore("videos");
+        const req = store.getAll();
+        req.onsuccess = () => {
+            container.innerHTML = req.result.length ? "" : "No projects saved.";
+            req.result.reverse().forEach(item => {
                 const div = document.createElement('div');
                 div.className = "project-item";
                 div.innerHTML = `
-                    <video src="${p.data}"></video>
-                    <div class="project-info">
-                        <span style="font-size:0.8rem; font-weight:bold;">Project ${new Date(p.id).toLocaleDateString()}</span>
-                        <div>
-                            <button class="delete-btn" onclick="deleteProj(${p.id})">🗑️</button>
-                            <button class="btn btn-orange" style="display:inline; width:auto; padding:5px 15px; margin:0;" onclick="openEditor('${p.data}')">Edit</button>
-                        </div>
+                    <div style="font-size:0.8rem; margin-bottom:8px;"><b>Project:</b> ${item.date}</div>
+                    <video src="${item.data}" style="width:100%; border-radius:4px;"></video>
+                    <div class="thumb-nav">
+                        <button class="btn btn-orange" style="width:70%; margin:0; padding:10px;" onclick="launchEditor('${item.data}')">Analyze</button>
+                        <button onclick="deleteProj(${item.id})" style="border:none; background:none; font-size:1.5rem; cursor:pointer;">🗑️</button>
                     </div>
                 `;
                 container.appendChild(div);
             });
-        }
+        };
+    }
 
-        function deleteProj(id) {
-            let projects = JSON.parse(localStorage.getItem('hd_pro_v5') || '[]');
-            projects = projects.filter(p => p.id !== id);
-            localStorage.setItem('hd_pro_v5', JSON.stringify(projects));
-            renderGallery();
-            updateCount();
-        }
+    function deleteProj(id) {
+        const tx = db.transaction("videos", "readwrite");
+        tx.objectStore("videos").delete(id);
+        tx.oncomplete = () => openGallery();
+    }
 
-        function updateCount() {
-            const projects = JSON.parse(localStorage.getItem('hd_pro_v5') || '[]');
-            document.getElementById('storage-count').innerText = `${projects.length} Projects`;
-        }
+    // --- 2. STRONGER AI ENGINE ---
+    function launchEditor(src) {
+        v.src = src;
+        wallTarget = null;
+        selectedPaint = null;
+        showPage('editorPage');
+        v.play();
+        v.onloadedmetadata = () => {
+            c.width = v.videoWidth;
+            c.height = v.videoHeight;
+            startAI();
+        };
+    }
 
-        // --- STRONGER AI ENGINE ---
-        function openEditor(src) {
-            v.src = src;
-            wallTarget = null;
-            nav('editorPage');
-            v.play();
-            v.onloadedmetadata = () => {
-                c.width = v.videoWidth;
-                c.height = v.videoHeight;
-                runEngine();
-            };
-        }
+    function targetWall(e) {
+        const rect = c.getBoundingClientRect();
+        const x = (e.clientX - rect.left) * (c.width / rect.width);
+        const y = (e.clientY - rect.top) * (c.height / rect.height);
+        const p = ctx.getImageData(x, y, 1, 1).data;
+        wallTarget = {r: p[0], g: p[1], b: p[2]};
+        document.getElementById('aiLabel').innerText = "AI: LOCKED";
+        document.getElementById('aiLabel').style.color = "#0f0";
+    }
 
-        function pickWall(e) {
-            const rect = c.getBoundingClientRect();
-            const x = (e.clientX - rect.left) * (c.width / rect.width);
-            const y = (e.clientY - rect.top) * (c.height / rect.height);
-            const p = ctx.getImageData(x, y, 1, 1).data;
-            wallTarget = {r: p[0], g: p[1], b: p[2]};
-            document.getElementById('tapInstruction').style.display = 'none';
-            document.getElementById('aiStatus').innerText = "AI: LOCKED";
-            document.getElementById('aiStatus').style.color = "#00ff00";
-        }
+    function startAI() {
+        if (v.paused || v.ended) return;
+        ctx.drawImage(v, 0, 0, c.width, c.height);
+        
+        if (wallTarget && selectedPaint) {
+            const frame = ctx.getImageData(0, 0, c.width, c.height);
+            const d = frame.data;
+            const sens = document.getElementById('sens').value;
 
-        function runEngine() {
-            if (v.paused || v.ended) return;
-            ctx.drawImage(v, 0, 0, c.width, c.height);
-            
-            if (wallTarget && selectedRGB) {
-                const frame = ctx.getImageData(0, 0, c.width, c.height);
-                const d = frame.data;
-                const tol = document.getElementById('tolerance').value;
+            for (let i = 0; i < d.length; i += 4) {
+                const r = d[i], g = d[i+1], b = d[i+2];
 
-                for (let i = 0; i < d.length; i += 4) {
-                    const r = d[i], g = d[i+1], b = d[i+2];
+                // Delta-E "Perception" Logic
+                const diff = Math.sqrt(Math.pow(r-wallTarget.r,2)+Math.pow(g-wallTarget.g,2)+Math.pow(b-wallTarget.b,2));
 
-                    // Delta-E Approximation (Stronger than HSL)
-                    // Calculates Euclidean distance in RGB space to find matching textures
-                    const diff = Math.sqrt(
-                        Math.pow(r - wallTarget.r, 2) +
-                        Math.pow(g - wallTarget.g, 2) +
-                        Math.pow(b - wallTarget.b, 2)
-                    );
-
-                    if (diff < tol) {
-                        // Soft Overlay Multiply Blend (Keeps wall texture/shadows)
-                        d[i] = (r * selectedRGB.r) / 255;
-                        d[i+1] = (g * selectedRGB.g) / 255;
-                        d[i+2] = (b * selectedRGB.b) / 255;
-                    }
+                if (diff < sens) {
+                    // Multiply Blend: This preserves the wall's texture and natural shadows
+                    d[i] = (r * selectedPaint.r) / 255;
+                    d[i+1] = (g * selectedPaint.g) / 255;
+                    d[i+2] = (b * selectedPaint.b) / 255;
                 }
-                ctx.putImageData(frame, 0, 0);
             }
-            loop = requestAnimationFrame(runEngine);
+            ctx.putImageData(frame, 0, 0);
         }
+        loop = requestAnimationFrame(startAI);
+    }
 
-        // --- UI HELPERS ---
-        function initSwatches() {
-            const list = document.getElementById('swatchList');
-            paints.forEach(p => {
-                const s = document.createElement('div');
-                s.className = 'swatch';
-                s.style.background = p.h;
-                s.onclick = () => {
-                    const r = parseInt(p.h.slice(1,3), 16);
-                    const g = parseInt(p.h.slice(3,5), 16);
-                    const b = parseInt(p.h.slice(5,7), 16);
-                    selectedRGB = {r, g, b};
-                    document.querySelectorAll('.swatch').forEach(el => el.classList.remove('selected'));
-                    s.classList.add('selected');
-                };
-                list.appendChild(s);
-            });
-        }
+    // --- 3. UI HELPERS ---
+    function showPage(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
 
-        function downloadResult() {
-            const link = document.createElement('a');
-            link.download = `hd-pro-vision-${Date.now()}.png`;
-            link.href = c.toDataURL('image/png');
-            link.click();
-        }
+    function closeEditor() {
+        cancelAnimationFrame(loop);
+        v.pause();
+        openGallery();
+    }
 
-        function closeEditor() {
-            cancelAnimationFrame(loop);
-            v.pause();
-            nav('storagePage');
-        }
+    function downloadPhoto() {
+        const link = document.createElement('a');
+        link.download = "HD_Pro_Design.png";
+        link.href = c.toDataURL();
+        link.click();
+    }
 
-        // Setup
-        initSwatches();
-        updateCount();
-    </script>
+    // Init Palette
+    const palette = document.getElementById('palette');
+    paintList.forEach(p => {
+        const s = document.createElement('div');
+        s.className = 'swatch';
+        s.style.background = p.h;
+        s.onclick = () => {
+            const hex = p.h;
+            selectedPaint = {
+                r: parseInt(hex.slice(1,3), 16),
+                g: parseInt(hex.slice(3,5), 16),
+                b: parseInt(hex.slice(5,7), 16)
+            };
+            document.querySelectorAll('.swatch').forEach(el => el.classList.remove('selected'));
+            s.classList.add('selected');
+        };
+        palette.appendChild(s);
+    });
+</script>
 </body>
 </html>
